@@ -1,10 +1,9 @@
 package io.inaam.main.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -13,18 +12,20 @@ public class GroupDetails
 {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue
-    private UUID id;
+        @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+
+    private String id;
 
     @Basic
     @Column(name = "realm_id")
-    private UUID realmId;
+    private String realmId;
 
     @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "groupDetailsByGroupId")
-    private Collection<UserGroup> userGroupsById;
+//    @OneToMany(mappedBy = "groupDetailsByGroupId")
+//    private Collection<UserGroup> userGroupsById;
 
 }

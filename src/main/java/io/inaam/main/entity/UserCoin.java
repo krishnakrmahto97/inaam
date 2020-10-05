@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigInteger;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -14,15 +13,15 @@ public class UserCoin
 {
     @Id
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private String userId;
 
     @Id
     @Column(name = "coin_id", nullable = false)
-    private UUID coinId;
+    private String coinId;
 
-    @OneToOne
-    @JoinColumn(name = "coin_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private Coin coin;
+//    @OneToOne
+//    @JoinColumn(name = "coin_id", referencedColumnName = "id", insertable = false, updatable = false)
+//    private Coin coin;
 
     @Basic
     @Column(name = "balance")

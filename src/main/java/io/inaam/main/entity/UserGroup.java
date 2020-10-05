@@ -3,7 +3,6 @@ package io.inaam.main.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -13,9 +12,9 @@ public class UserGroup
 {
     @Id
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private String userId;
 
     @Id
     @Column(name = "group_id", nullable = false)
-    private UUID groupId;
+    private String groupId;
 }
