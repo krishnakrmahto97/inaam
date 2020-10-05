@@ -13,12 +13,10 @@ public class Client
     @Column(name = "id", nullable = false)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-
     private String id;
 
     @Basic
     @Column(name = "realm_id")
-
     private String realmId;
 
     @Basic
