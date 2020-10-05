@@ -8,14 +8,14 @@ create database inaam;
 create table admin
 (
     id     varchar(36) primary key,
-    name   varchar(255),
+    name   varchar(255) unique,
     secret varchar(255)
 );
 
 create table realm
 (
     id              varchar(36) primary key,
-    name            varchar(255),
+    name            varchar(255) unique,
     currency_symbol varchar(3)
 );
 
@@ -74,11 +74,10 @@ create table user_group
 
 create table coin
 (
-    id              varchar(36),
+    id              varchar(36) primary key,
     realm_id        varchar(36) references realm (id),
     name            varchar(255) not null,
     conversion_rate numeric(10, 2),
-    primary key (realm_id, id),
     unique (realm_id, name)
 );
 
