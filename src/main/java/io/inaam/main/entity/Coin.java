@@ -15,12 +15,10 @@ public class Coin
     @Column(name = "id", nullable = false)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-
     private String id;
 
     @Id
     @Column(name = "realm_id", nullable = false)
-
     private String realmId;
 
     @Basic

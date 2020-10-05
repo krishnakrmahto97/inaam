@@ -19,7 +19,6 @@ public class Realm
     @Column(name = "id", nullable = false)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-
     private String id;
 
     @Basic

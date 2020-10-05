@@ -1,38 +1,27 @@
 package io.inaam.main.controller;
 
+import io.inaam.main.dto.CoinDto;
+import io.inaam.main.service.CoinService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@AllArgsConstructor
 public class CoinController
 {
+    private final CoinService coinService;
 
-    @PostMapping("/{{realm}}/coin/")
-    public void createCoin(@PathVariable String realm)
+    @PostMapping("/{realmName}/coin")
+    public void createCoin(@PathVariable String realmName, @RequestBody CoinDto coin)
     {
-
+        coinService.createCoin(coin, realmName);
     }
 
-    @GetMapping("/{{realm}}/coin/{{username}}")
-    public void getCoinType(@PathVariable String realm, @PathVariable String username)
+    @GetMapping("/{realmName}/coin")
+    public List<CoinDto> getCoins(@PathVariable String realmName)
     {
-
-    }
-
-    @GetMapping("/{{realm}}/coin/balance")
-    public void getCoinBalance(@PathVariable String realm)
-    {
-
-    }
-
-    @PostMapping("/{{realm}}/coin/{{username}}/add")
-    public void addCoin(@PathVariable String realm, @PathVariable String username)
-    {
-
-    }
-
-    @PutMapping("/{{realm}}/coin/{{username}}/deduct")
-    public void deductCoin(@PathVariable String realm, @PathVariable String username)
-    {
-
+        return coinService.getCoins(realmName);
     }
 }
