@@ -1,9 +1,9 @@
 package io.inaam.main.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -13,8 +13,9 @@ public class RealmAttribute
 {
     @Id
     @Column(name = "realm_id", nullable = false)
-    @GeneratedValue
-    private UUID realmId;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private String realmId;
 
     @Id
     @Column(name = "name", nullable = false)

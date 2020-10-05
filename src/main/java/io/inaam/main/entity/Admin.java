@@ -1,9 +1,9 @@
 package io.inaam.main.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -11,8 +11,9 @@ public class Admin
 {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private String id;
 
     @Basic
     @Column(name = "name")
