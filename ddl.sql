@@ -59,10 +59,10 @@ create table user_attribute
 
 create table group_details
 (
-    id       varchar(36) unique,
+    id       varchar(36) primary key,
     realm_id varchar(36) references realm (id),
     name     varchar(255) not null,
-    primary key (id)
+    unique (realm_id, name)
 );
 
 create table user_group
