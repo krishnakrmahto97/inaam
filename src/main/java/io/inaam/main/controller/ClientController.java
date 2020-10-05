@@ -1,29 +1,36 @@
 package io.inaam.main.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.inaam.main.dto.ClientDto;
+import io.inaam.main.entity.Client;
+import io.inaam.main.service.ClientService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class ClientController
 {
-    @PostMapping("/{{realm}}/client")
-    private void createClient(@PathVariable String realm)
+    @Autowired
+    ClientService clientService;
+    @PostMapping("/{realm}/client")
+    private String createClient(@PathVariable String realm, @RequestBody ClientDto clientDto)
     {
-
+        return clientService.createClient(realm,clientDto);
     }
 
-    @GetMapping("/{{realm}}/client")
-    private void getClient(@PathVariable String realm)
+    @GetMapping("/{realm}/client")
+    private List<Client> getClients(@PathVariable String realm)
     {
-
+        return clientService.getClients(realm);
     }
 
-    @GetMapping("/{{realm}}/client/{{client_name}}/secret")
-    private void getClientSecret(@PathVariable String realm, @PathVariable String client_name)
+    @GetMapping("/{realm}/client/{client_name}/secret")
+    private String getClientSecret(@PathVariable String realm, @PathVariable String client_name)
     {
-
+        return clientService.getClientSecret(realm, client_name);
     }
 
 }
