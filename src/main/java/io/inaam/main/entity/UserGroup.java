@@ -17,4 +17,8 @@ public class UserGroup
     @Id
     @Column(name = "group_id", nullable = false)
     private String groupId;
+
+    @OneToOne
+    @JoinColumn(name = "id", referencedColumnName = "group_id", insertable = false, updatable = false)
+    private GroupDetails groupDetails;
 }

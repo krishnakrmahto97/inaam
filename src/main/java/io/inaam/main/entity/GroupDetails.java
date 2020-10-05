@@ -12,9 +12,8 @@ public class GroupDetails
 {
     @Id
     @Column(name = "id", nullable = false)
-        @GeneratedValue(generator = "UUID")
+    @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-
     private String id;
 
     @Basic
