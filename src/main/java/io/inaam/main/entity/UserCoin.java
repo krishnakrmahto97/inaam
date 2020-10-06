@@ -1,6 +1,8 @@
 package io.inaam.main.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -8,6 +10,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_coin")
 @IdClass(UserCoinPK.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCoin
 {
     @Id

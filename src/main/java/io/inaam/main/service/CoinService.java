@@ -11,9 +11,9 @@ public interface CoinService
 
     List<CoinDto> getCoins(String realmName);
 
-    void addUserCoins(String realmName, String userName,
-                      List<CoinTransactionDto> addCoinsDetails);
+    void createTransactionAndAddUserCoins(String realmName, String userName,
+                                          List<CoinTransactionDto> addCoinsDetails);
 
-    void redeemUserCoins(String realmName, String userName,
-                         List<CoinTransactionDto> redeemCoinsDetails);
+    void createTransactionAndRedeemUserCoins(String realmName, String userName,
+                                             List<CoinTransactionDto> redeemCoinsDetails);
 }

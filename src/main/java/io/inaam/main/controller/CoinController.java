@@ -32,12 +32,12 @@ public class CoinController
     @PostMapping("/{userName}/add")
     public void addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<CoinTransactionDto> addCoinsDetails)
     {
-        coinService.addUserCoins(realmName, userName, addCoinsDetails);
+        coinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
     }
 
     @PostMapping("/{userName}/redeem")
     public void redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<CoinTransactionDto> redeemCoinsDetails)
     {
-        coinService.redeemUserCoins(realmName, userName, redeemCoinsDetails);
+        coinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
     }
 }

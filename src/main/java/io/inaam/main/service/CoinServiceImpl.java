@@ -4,6 +4,8 @@ import io.inaam.main.dto.CoinDto;
 import io.inaam.main.dto.CoinTransactionDto;
 import io.inaam.main.entity.Coin;
 import io.inaam.main.entity.UserCoin;
+import io.inaam.main.entity.UserCoinPK;
+import io.inaam.main.exception.CoinException;
 import io.inaam.main.repository.CoinRepository;
 import io.inaam.main.repository.CoinTransactionRepository;
 import io.inaam.main.repository.UserCoinRepository;
@@ -44,24 +46,10 @@ public class CoinServiceImpl implements CoinService
 
     @Override
     @Transactional
-    public void addUserCoins(String realmName, String userName, List<CoinTransactionDto> coinTransactionDtoList)
-    {
-        createTransactionAndUpdateUserCoins(realmName, userName, coinTransactionDtoList, CoinTransactionType.ADD);
-    }
-
-    @Override
-    @Transactional
-    public void redeemUserCoins(String realmName, String userName, List<CoinTransactionDto> coinTransactionDtoList)
-    {
-        createTransactionAndUpdateUserCoins(realmName, userName, coinTransactionDtoList, CoinTransactionType.REDEEM);
-    }
-
-    private void createTransactionAndUpdateUserCoins(String realmName, String userName,
-                                                     List<CoinTransactionDto> coinTransactionDtoList,
-                                                     CoinTransactionType transactionType)
+    public void createTransactionAndAddUserCoins(String realmName, String userName, List<CoinTransactionDto> coinTransactionDtoList)
     {
         String realmId = realmService.getRealm(realmName).getId();
-
+        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
         List<String> coinIds = coinTransactionDtoList.stream()
                                                      .map(CoinTransactionDto::getCoinName)
                                                      .map(coinName -> coinRepository.findByRealmIdAndName(realmId, coinName))
@@ -73,14 +61,48 @@ public class CoinServiceImpl implements CoinService
                      String coinId = coinIds.get(i);
                      CoinTransactionDto coinTransactionDto = coinTransactionDtoList.get(i);
 
-                     userCoinRepository.findById(coinId).ifPresent(userCoin -> {
-                         coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(coinTransactionDto,
-                                                                                                realmId,
-                                                                                                userService.getUserByNameAndRealmId(userName, realmId).getId(),
-                                                                                                coinId,
-                                                                                                CoinTransactionType.REDEEM));
-                         updateUserCoins(userCoin, coinTransactionDto.getCoinCount(), transactionType);
-                     });
+                     coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(coinTransactionDto,
+                                                                                            realmId,
+                                                                                            userId,
+                                                                                            coinId,
+                                                                                            CoinTransactionType.REDEEM));
+
+                     UserCoin userCoin = userCoinRepository.findById(new UserCoinPK(userId, coinId))
+                                                           .orElseGet(() -> new UserCoin(userId, coinId, 0));
+                     updateUserCoins(userCoin, coinTransactionDto.getCoinCount(), CoinTransactionType.ADD);
+                 });
+    }
+
+    @Override
+    @Transactional
+    public void createTransactionAndRedeemUserCoins(String realmName, String userName, List<CoinTransactionDto> coinTransactionDtoList)
+    {
+        String realmId = realmService.getRealm(realmName).getId();
+        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
+        List<String> coinIds = coinTransactionDtoList.stream()
+                                                     .map(CoinTransactionDto::getCoinName)
+                                                     .map(coinName -> coinRepository.findByRealmIdAndName(realmId, coinName))
+                                                     .map(Coin::getId)
+                                                     .collect(Collectors.toList());
+
+        IntStream.range(0, coinIds.size())
+                 .forEach(i -> {
+                     String coinId = coinIds.get(i);
+                     CoinTransactionDto coinTransactionDto = coinTransactionDtoList.get(i);
+
+                     userCoinRepository.findById(new UserCoinPK(userId, coinId))
+                                       .filter(userCoin -> userCoin.getBalance() > coinTransactionDto.getCoinCount())
+                                       .map(userCoin -> {
+                                           coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(coinTransactionDto,
+                                                                                                                  realmId,
+                                                                                                                  userId,
+                                                                                                                  coinId,
+                                                                                                                  CoinTransactionType.REDEEM));
+
+                                           updateUserCoins(userCoin, coinTransactionDto.getCoinCount(), CoinTransactionType.REDEEM);
+                                           return userCoin;
+                                       })
+                                       .orElseThrow(() -> new CoinException("Not enough coins!"));
                  });
     }
 
