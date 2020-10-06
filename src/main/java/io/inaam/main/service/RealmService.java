@@ -9,9 +9,11 @@ import java.util.List;
 @Repository
 public interface RealmService
 {
+    String getRealmId(String name);
+
     Realm getRealm(String name);
 
-    RealmDto createRealm(RealmDto realm);
+    void createRealm(RealmDto realm);
 
     List<RealmDto> listRealm();
 }
