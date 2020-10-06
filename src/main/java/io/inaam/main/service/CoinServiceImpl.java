@@ -20,7 +20,7 @@ public class CoinServiceImpl implements CoinService
     @Override
     public void createCoin(CoinDto coinDto, String realmName)
     {
-        Coin coinEntity = coinTransformer.convertDtoToEntityAndSetRealmId(coinDto, realmService.getRealmId(realmName));
+        Coin coinEntity = coinTransformer.toCoinEntity(coinDto, realmService.getRealmId(realmName));
         coinRepository.save(coinEntity);
     }
 
@@ -28,6 +28,6 @@ public class CoinServiceImpl implements CoinService
     public List<CoinDto> getCoins(String realmName)
     {
         String realmId = realmService.getRealmId(realmName);
-        return coinTransformer.convertToListOfDto(coinRepository.findAllByRealmId(realmId));
+        return coinTransformer.toListOfCoinDto(coinRepository.findAllByRealmId(realmId));
     }
 }

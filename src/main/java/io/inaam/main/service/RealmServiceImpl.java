@@ -13,6 +13,6 @@ public class RealmServiceImpl implements RealmService {
     @Override
     public String getRealmId(String realmName)
     {
-        return realmRepository.findRealmByName(realmName).getName();
+        return realmRepository.findRealmByName(realmName).getId();
     }
 }

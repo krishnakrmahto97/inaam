@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CoinTransformer
 {
-    Coin convertDtoToEntityAndSetRealmId(CoinDto coinDto, String realmId);
+    Coin toCoinEntity(CoinDto coinDto, String realmId);
 
-    List<CoinDto> convertToListOfDto(List<Coin> coinEntity);
+    List<CoinDto> toListOfCoinDto(List<Coin> coinEntity);
 }

@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@IdClass(CoinPK.class)
 public class Coin
 {
     @Id
@@ -17,7 +16,6 @@ public class Coin
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
-    @Id
     @Column(name = "realm_id", nullable = false)
     private String realmId;
 

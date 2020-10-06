@@ -3,6 +3,7 @@ package io.inaam.main.controller;
 import io.inaam.main.dto.CoinDto;
 import io.inaam.main.service.CoinService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class CoinController
     private final CoinService coinService;
 
     @PostMapping("/{realmName}/coin")
+    @ResponseStatus (HttpStatus.CREATED)
     public void createCoin(@PathVariable String realmName, @RequestBody CoinDto coin)
     {
         coinService.createCoin(coin, realmName);
