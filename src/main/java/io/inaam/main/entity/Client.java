@@ -13,8 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Data
 @Entity
-public class Client
-{
+public class Client {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(generator = "UUID")

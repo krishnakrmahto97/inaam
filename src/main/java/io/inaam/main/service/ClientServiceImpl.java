@@ -12,30 +12,30 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
 
-    private final RealmService realmService ;
+    private final RealmService realmService;
 
     private final ClientTransformer clientTransformer;
 
     public String createClient(String realm, ClientDto clientDto) {
-        clientDto.setSecret(UUID.randomUUID().toString());
-        clientDto.setRealmId(realmService.getRealm(realm).getId());
-        Client client = clientTransformer.toClient(clientDto);
+        String secret = UUID.randomUUID().toString();
+        String realmId = realmService.getRealmId(realm);
+        Client client = clientTransformer.toClient(clientDto, realmId, secret);
         return clientRepository.save(client).getSecret();
     }
 
     public List<Client> getClients(String realm) {
-        return clientRepository.findByRealmId(realmService.getRealm(realm).getId());
+        return clientRepository.findByRealmId(realmService.getRealmId(realm));
     }
 
-    public Client getClient(String realm, String clientName){
-        return clientRepository.findByNameAndRealmId(clientName, realmService.getRealm(realm).getId());
+    public Client getClient(String realm, String clientName) {
+        return clientRepository.findByNameAndRealmId(clientName, realmService.getRealmId(realm));
     }
 
-    public String getClientSecret(String realm, String clientName){
-        return clientRepository.findByNameAndRealmId(clientName,realmService.getRealm(realm).getId()).getSecret();
+    public String getClientSecret(String realm, String clientName) {
+        return clientRepository.findByNameAndRealmId(clientName, realmService.getRealmId(realm)).getSecret();
     }
 }

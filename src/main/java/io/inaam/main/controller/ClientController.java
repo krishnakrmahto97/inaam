@@ -25,7 +25,7 @@ public class ClientController {
     }
 
     @GetMapping("/{realm}/client/{clientName}")
-    public Client getClients(@PathVariable String realm, @PathVariable String clientName){
+    public Client getClients(@PathVariable String realm, @PathVariable String clientName) {
         return clientService.getClient(realm, clientName);
     }
 

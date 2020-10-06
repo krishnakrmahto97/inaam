@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientDto
-{
+public class ClientDto {
     private String name;
     private String secret;
     private String realmId;
