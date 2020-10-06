@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Builder
@@ -28,8 +29,9 @@ public class Realm
     @Basic
     @Column(name = "currency_symbol")
     private String currencySymbol;
-//
-//    @OneToMany
-//    @JoinColumn(name = "id",referencedColumnName = "realm_id")
-//    List<RealmAttribute> realmAttributes;
+
+    @OneToMany
+    @JoinColumn(name = "realm_id", referencedColumnName = "id", updatable = false, insertable = false)
+    List<RealmAttribute> attributes;
+
 }
