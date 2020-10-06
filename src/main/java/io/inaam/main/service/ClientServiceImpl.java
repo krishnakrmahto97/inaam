@@ -14,11 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ClientServiceImpl implements ClientService{
 
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
-    private RealmService realmService ;
+    private final RealmService realmService ;
 
-    private ClientTransformer clientTransformer;
+    private final ClientTransformer clientTransformer;
 
     public String createClient(String realm, ClientDto clientDto) {
         clientDto.setSecret(UUID.randomUUID().toString());
@@ -35,7 +35,7 @@ public class ClientServiceImpl implements ClientService{
         return clientRepository.findByNameAndRealmId(clientName, realmService.getRealm(realm).getId());
     }
 
-    public String getClientSecret(String realm, String client_name){
-        return clientRepository.findByNameAndRealmId(client_name,realmService.getRealm(realm).getId()).getSecret();
+    public String getClientSecret(String realm, String clientName){
+        return clientRepository.findByNameAndRealmId(clientName,realmService.getRealm(realm).getId()).getSecret();
     }
 }

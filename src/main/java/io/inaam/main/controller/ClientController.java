@@ -12,25 +12,25 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientController {
 
-    private ClientService clientService;
+    private final ClientService clientService;
 
     @PostMapping("/{realm}/client")
-    private String createClient(@PathVariable String realm, @RequestBody ClientDto clientDto) {
+    public String createClient(@PathVariable String realm, @RequestBody ClientDto clientDto) {
         return clientService.createClient(realm, clientDto);
     }
 
     @GetMapping("/{realm}/client")
-    private List<Client> getClients(@PathVariable String realm) {
+    public List<Client> getClients(@PathVariable String realm) {
         return clientService.getClients(realm);
     }
 
     @GetMapping("/{realm}/client/{clientName}")
-    private Client getClients(@PathVariable String realm, @PathVariable String clientName){
+    public Client getClients(@PathVariable String realm, @PathVariable String clientName){
         return clientService.getClient(realm, clientName);
     }
 
     @GetMapping("/{realm}/client/{clientName}/secret")
-    private String getClientSecret(@PathVariable String realm, @PathVariable String clientName) {
+    public String getClientSecret(@PathVariable String realm, @PathVariable String clientName) {
         return clientService.getClientSecret(realm, clientName);
     }
 }
