@@ -8,8 +8,8 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, String> {
 
-    List<Client> findByRealmIdEquals(String realmId);
+    List<Client> findByRealmId(String realmId);
 
-    List<Client> findByNameEqualsAndRealmIdEquals(String name, String realmid);
+    Client findByNameAndRealmId(String name, String realmid);
 
 }
