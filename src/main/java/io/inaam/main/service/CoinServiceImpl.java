@@ -50,11 +50,7 @@ public class CoinServiceImpl implements CoinService
     {
         String realmId = realmService.getRealm(realmName).getId();
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
-        List<String> coinIds = coinTransactionDtoList.stream()
-                                                     .map(CoinTransactionDto::getCoinName)
-                                                     .map(coinName -> coinRepository.findByRealmIdAndName(realmId, coinName))
-                                                     .map(Coin::getId)
-                                                     .collect(Collectors.toList());
+        List<String> coinIds = getCoinIdsFromDtoList(coinTransactionDtoList, realmId);
 
         IntStream.range(0, coinIds.size())
                  .forEach(i -> {
@@ -79,11 +75,7 @@ public class CoinServiceImpl implements CoinService
     {
         String realmId = realmService.getRealm(realmName).getId();
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
-        List<String> coinIds = coinTransactionDtoList.stream()
-                                                     .map(CoinTransactionDto::getCoinName)
-                                                     .map(coinName -> coinRepository.findByRealmIdAndName(realmId, coinName))
-                                                     .map(Coin::getId)
-                                                     .collect(Collectors.toList());
+        List<String> coinIds = getCoinIdsFromDtoList(coinTransactionDtoList, realmId);
 
         IntStream.range(0, coinIds.size())
                  .forEach(i -> {
@@ -104,6 +96,15 @@ public class CoinServiceImpl implements CoinService
                                        })
                                        .orElseThrow(() -> new CoinException("Not enough coins!"));
                  });
+    }
+
+    private List<String> getCoinIdsFromDtoList(List<CoinTransactionDto> coinTransactionDtoList, String realmId)
+    {
+        return coinTransactionDtoList.stream()
+                                     .map(CoinTransactionDto::getCoinName)
+                                     .map(coinName -> coinRepository.findByRealmIdAndName(realmId, coinName))
+                                     .map(Coin::getId)
+                                     .collect(Collectors.toList());
     }
 
     private void updateUserCoins(UserCoin userCoin, int coinCountInTransaction, CoinTransactionType transactionType)
