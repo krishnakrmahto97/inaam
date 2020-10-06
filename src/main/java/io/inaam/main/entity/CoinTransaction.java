@@ -37,8 +37,4 @@ public class CoinTransaction
     @Basic
     @Column(name = "coins_transacted")
     private Integer coinsTransacted;
-
-    @Basic
-    @Column(name = "creation_time")
-    private Object creationTime;
 }
