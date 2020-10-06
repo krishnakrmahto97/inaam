@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,31 +20,34 @@ public class RealmServiceImpl implements RealmService
     private final RealmTransformer realmTransformer;
 
     @Override
+    public String getRealmId(String name)
+    {
+        return getRealm(name).getId();
+    }
+
+    @Override
     public Realm getRealm(String name)
     {
         return realmRepository.findByName(name);
     }
 
     @Override
-    public RealmDto createRealm(RealmDto realmDto)
+    public void createRealm(RealmDto realmDto)
     {
         Realm realm = realmTransformer.toRealm(realmDto);
         String realmId = realmRepository.save(realm).getId();
+
         Optional.ofNullable(realmDto.getAttributes())
                 .ifPresent(attributes -> attributes.stream()
                                                    .map(attribute -> realmTransformer.toRealmAttribute(attribute, realmId))
                                                    .forEach(realmAttributeRepository::save));
-
-        return realmTransformer.toRealmDto(realmRepository.findById(realmId).get());
     }
 
     @Override
     public List<RealmDto> listRealm()
     {
-        return realmRepository.findAll()
-                              .stream()
-                              .map(realmTransformer::toRealmDto)
-                              .collect(Collectors.toList());
+        List<Realm> realms = realmRepository.findAll();
+        return realmTransformer.toRealmDto(realms);
     }
 
 }
