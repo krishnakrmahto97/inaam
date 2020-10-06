@@ -1,17 +1,26 @@
 package io.inaam.main.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user_details")
 public class UserDetails
 {
     @Id
     @Column(name = "id", nullable = false)
-
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
     @Basic
@@ -22,16 +31,15 @@ public class UserDetails
     @Column(name = "name")
     private String name;
 
-//    @OneToMany
-//    @JoinColumn(name = "id", referencedColumnName = "user_id", insertable = false, updatable = false)
-//    private List<UserGroup> userGroupsById;
-//
-//    @OneToMany
-//    @JoinColumn(name = "id", referencedColumnName = "user_id", insertable = false, updatable = false)
-//    private List<UserAttribute> userAttributesById;
-//
-//    @OneToMany
-//    @JoinColumn(name = "id", referencedColumnName = "user_id", insertable = false, updatable = false)
-//    private Collection<UserCoin> userCoinsById_0;
+    @OneToMany
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<UserGroup> groups;
 
+    @OneToMany
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<UserAttribute> attributes;
+
+    @OneToMany
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<UserCoin> coins;
 }
