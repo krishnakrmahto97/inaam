@@ -1,7 +1,7 @@
 package io.inaam.main.controller;
 
 import io.inaam.main.dto.CoinDto;
-import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.service.CoinService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,15 +29,15 @@ public class CoinController
         return coinService.getCoins(realmName);
     }
 
-    @PostMapping("/{userName}/add")
-    public void addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<CoinTransactionDto> addCoinsDetails)
+    @PutMapping("/{userName}/add")
+    public List<UserCoinDto> addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> addCoinsDetails)
     {
-        coinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
+        return coinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
     }
 
-    @PostMapping("/{userName}/redeem")
-    public void redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<CoinTransactionDto> redeemCoinsDetails)
+    @PutMapping ("/{userName}/redeem")
+    public List<UserCoinDto> redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> redeemCoinsDetails)
     {
-        coinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
+        return coinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
     }
 }

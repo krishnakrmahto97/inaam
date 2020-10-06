@@ -1,7 +1,7 @@
 package io.inaam.main.service;
 
 import io.inaam.main.dto.CoinDto;
-import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserCoinDto;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ public interface CoinService
 
     List<CoinDto> getCoins(String realmName);
 
-    void createTransactionAndAddUserCoins(String realmName, String userName,
-                                          List<CoinTransactionDto> addCoinsDetails);
+    List<UserCoinDto> createTransactionAndAddUserCoins(String realmName, String userName,
+                                                       List<UserCoinDto> addCoinsDetails);
 
-    void createTransactionAndRedeemUserCoins(String realmName, String userName,
-                                             List<CoinTransactionDto> redeemCoinsDetails);
+    List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName, String userName,
+                                                          List<UserCoinDto> redeemCoinsDetails);
 }
