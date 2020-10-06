@@ -10,4 +10,8 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<UserDetails, String>
 {
     List<UserDetails> findByRealmId(String realmId);
+
+    UserDetails findByNameAndRealmId(String name, String realmId);
+
+    List<UserDetails> findAllByIdIn(List<String> userIds);
 }

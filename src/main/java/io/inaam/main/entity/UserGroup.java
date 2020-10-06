@@ -1,11 +1,17 @@
 package io.inaam.main.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user_group")
 @IdClass(UserGroupPK.class)
 public class UserGroup
@@ -19,6 +25,6 @@ public class UserGroup
     private String groupId;
 
     @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "group_id", insertable = false, updatable = false)
+    @JoinColumn(name = "group_id", referencedColumnName = "id", insertable = false, updatable = false)
     private GroupDetails groupDetails;
 }
