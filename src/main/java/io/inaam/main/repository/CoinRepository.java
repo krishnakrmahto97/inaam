@@ -8,4 +8,5 @@ import java.util.List;
 public interface CoinRepository extends JpaRepository<Coin, String>
 {
     List<Coin> findAllByRealmId (String realmId);
+    Coin findByRealmIdAndName (String realmId, String name);
 }
