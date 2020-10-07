@@ -29,6 +29,12 @@ public class CoinController
     {
         return coinService.getCoins(realmName);
     }
+
+    @PutMapping("/{{coinName}}")
+    public CoinDto updateCoin(@PathVariable String realmName, @RequestBody CoinDto coin)
+    {
+        return coinService.updateCoin(realmName, coin);
+    }
     
     @GetMapping("/{userName}")
     public List<UserCoinDto> getUserCoins(@PathVariable String realmName, @PathVariable String userName)

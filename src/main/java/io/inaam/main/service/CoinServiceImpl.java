@@ -142,4 +142,15 @@ public class CoinServiceImpl implements CoinService
         return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.findAllByRealmIdAndUserId(realmId,
                                                                                                             userId));
     }
+
+    @Override
+    @Transactional
+    public CoinDto updateCoin(String realmName, CoinDto coinDto)
+    {
+        String coinName = coinDto.getName();
+        Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealm(realmName).getId(), coinName);
+        coinEntity.setName(coinName);
+        coinEntity.setConversionRate(coinDto.getConversionRate());
+        return coinTransformer.toCoinDto(coinRepository.save(coinEntity));
+    }
 }
