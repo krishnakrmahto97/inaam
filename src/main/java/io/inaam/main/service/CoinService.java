@@ -21,4 +21,6 @@ public interface CoinService
     List<UserCoinDto> getUserCoinDtoList(String realmName, String userName);
 
     List<CoinTransactionDto> getUserCoinTransactionDtoList(String realmName, String userName);
+
+    CoinDto updateCoin(String realmName, CoinDto coin);
 }

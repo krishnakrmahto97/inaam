@@ -17,6 +17,8 @@ public interface CoinTransformer
 {
     Coin toCoinEntity(CoinDto coinDto, String realmId);
 
+    CoinDto toCoinDto(Coin coinEntity);
+
     List<CoinDto> toListOfCoinDto(List<Coin> coinEntity);
 
     @Mapping(source = "coinEntity.id", target = "coinId")
