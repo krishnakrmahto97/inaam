@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -32,6 +33,7 @@ public class Realm
 
     @OneToMany
     @JoinColumn(name = "realm_id", referencedColumnName = "id", updatable = false, insertable = false)
-    List<RealmAttribute> attributes;
+    @Builder.Default
+    List<RealmAttribute> attributes = new ArrayList<>();
 
 }
