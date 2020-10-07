@@ -80,7 +80,7 @@ public class CoinServiceImpl implements CoinService
     @Transactional
     public List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName, String userName, List<UserCoinDto> userCoinDtoList)
     {
-        String realmId = realmService.getRealm(realmName).getId();
+        String realmId = realmService.getRealmId(realmName);
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
 
         List<UserCoinDto> updatedTransactionDtoList = new ArrayList<>();
@@ -115,7 +115,7 @@ public class CoinServiceImpl implements CoinService
     @Override
     public List<UserCoinDto> getUserCoinDtoList(String realmName, String userName)
     {
-        String realmId = realmService.getRealm(realmName).getId();
+        String realmId = realmService.getRealmId(realmName);
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
 
         return userCoinRepository.findAllByUserId(userId).stream()
@@ -136,7 +136,7 @@ public class CoinServiceImpl implements CoinService
     @Override
     public List<CoinTransactionDto> getUserCoinTransactionDtoList(String realmName, String userName)
     {
-        String realmId = realmService.getRealm(realmName).getId();
+        String realmId = realmService.getRealmId(realmName);
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
 
         return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.findAllByRealmIdAndUserId(realmId,
@@ -147,7 +147,7 @@ public class CoinServiceImpl implements CoinService
     @Transactional
     public CoinDto updateCoin(String realmName, String coinName, CoinDto coinDto)
     {
-        Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealm(realmName).getId(), coinName);
+        Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealmId(realmName), coinName);
         coinEntity.setName(coinDto.getName());
         coinEntity.setConversionRate(coinDto.getConversionRate());
         return coinTransformer.toCoinDto(coinRepository.save(coinEntity));
