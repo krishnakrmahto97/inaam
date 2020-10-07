@@ -1,6 +1,7 @@
 package io.inaam.main.controller;
 
 import io.inaam.main.dto.CoinDto;
+import io.inaam.main.dto.CoinTransactionDto;
 import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.service.CoinService;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,18 @@ public class CoinController
     public List<CoinDto> getCoins(@PathVariable String realmName)
     {
         return coinService.getCoins(realmName);
+    }
+    
+    @GetMapping("/{userName}")
+    public List<UserCoinDto> getUserCoins(@PathVariable String realmName, @PathVariable String userName)
+    {
+        return coinService.getUserCoinDtoList(realmName, userName);
+    }
+
+    @GetMapping("/{userName}/transaction")
+    public List<CoinTransactionDto> getCoinTransactions(@PathVariable String realmName, @PathVariable String userName)
+    {
+        return coinService.getUserCoinTransactionDtoList(realmName, userName);
     }
 
     @PutMapping("/{userName}/add")
