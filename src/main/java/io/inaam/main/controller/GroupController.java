@@ -1,31 +1,54 @@
 package io.inaam.main.controller;
 
+import io.inaam.main.dto.NameDto;
+import io.inaam.main.service.GroupService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@AllArgsConstructor
 public class GroupController
 {
-    @PostMapping("/{{realm}}/group")
-    private void createGroup(@PathVariable String realm)
-    {
+    private final GroupService groupService;
 
-    }
-    @GetMapping("/{{realm}}/group")
-    private void listGroup(@PathVariable String realm)
+    @PostMapping("/{realm}/group")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createGroup(@PathVariable String realm, @RequestBody NameDto groupDto)
     {
-
+        groupService.createGroup(realm, groupDto.getName());
     }
 
-    @PostMapping("/{{realm}}/group/{{group_name}}/")
-    private void addUser(@PathVariable String realm, @PathVariable String group_name)
+    @GetMapping("/{realm}/group")
+    public List<String> listGroups(@PathVariable String realm)
     {
-
+        return groupService.getGroups(realm);
     }
 
-    @DeleteMapping("/{{realm}}/group/{{group_name}}/")
-    private void removeUser(@PathVariable String realm, @PathVariable String group_name)
+    @PostMapping("/{realm}/group/{groupName}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void addUser(@PathVariable String realm, @PathVariable String groupName, @RequestBody NameDto nameDto)
     {
-
+        groupService.addUser(realm, groupName, nameDto.getName());
     }
+
+    @GetMapping("/{realm}/group/{groupName}")
+    public List<String> getUsers(@PathVariable String realm, @PathVariable String groupName)
+    {
+        return groupService.getGroupUsers(realm, groupName);
+    }
+
+
+    @DeleteMapping("/{realm}/group/{groupName}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void removeUser(@PathVariable String realm,
+                           @PathVariable String groupName,
+                           @RequestBody NameDto nameDto)
+    {
+        groupService.removeUser(realm, groupName, nameDto.getName());
+    }
+
 
 }
