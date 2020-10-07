@@ -62,13 +62,6 @@ public class CoinServiceImpl implements CoinService
                                                                                    realmId,
                                                                                    userId,
                                                                                    CoinTransactionType.ADD));
-//            coinTransactionRepository.save(CoinTransaction.builder()
-//                                                          .realmId(realmId)
-//                                                          .userId(userId)
-//                                                          .coinId((coinEntity.getId()))
-//                                                          .type(CoinTransactionType.REDEEM)
-//                                                          .coinsTransacted(userCoinDto.getCoinCount())
-//                                                          .build());
 
             UserCoin userCoin = userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
                                                   .orElseGet(() -> new UserCoin(userId, coinEntity.getId(), 0));
@@ -103,13 +96,6 @@ public class CoinServiceImpl implements CoinService
                                                                                                          realmId,
                                                                                                          userId,
                                                                                                          CoinTransactionType.REDEEM));
-//                                  coinTransactionRepository.save(CoinTransaction.builder()
-//                                                                                .realmId(realmId)
-//                                                                                .userId(userId)
-//                                                                                .coinId((coinEntity.getId()))
-//                                                                                .type(CoinTransactionType.REDEEM)
-//                                                                                .coinsTransacted(userCoinDto.getCoinCount())
-//                                                                                .build());
 
                                   updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.REDEEM);
                                   updatedTransactionDtoList.add(UserCoinDto.builder()
