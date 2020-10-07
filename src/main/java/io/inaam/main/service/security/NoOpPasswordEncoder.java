@@ -2,8 +2,10 @@ package io.inaam.main.service.security;
 
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 @NoArgsConstructor
+@Component
 public final class NoOpPasswordEncoder implements PasswordEncoder {
 
     public String encode(CharSequence rawPassword) {

@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.inaam.main.dto.JwtTokenDto;
 import io.inaam.main.exception.InaamRuntimeException;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl("/login");
+        setFilterProcessesUrl("/client/login");
     }
 
     @Override
@@ -65,7 +66,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //                .sign(Algorithm.HMAC512(SecurityConstants.SECRET));
 
         JwtTokenDto jwtTokenDto = new JwtTokenDto(accessToken);
-
+        response.setContentType(MediaType.APPLICATION_JSON.toString());
         response.getWriter().write(new JsonMapper().writeValueAsString(jwtTokenDto));
         response.getWriter().flush();
     }
