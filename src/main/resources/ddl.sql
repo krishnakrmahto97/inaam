@@ -16,7 +16,7 @@ create table realm
 (
     id              varchar(36) primary key,
     name            varchar(255) unique,
-    currency_symbol varchar(3)
+    currency_symbol varchar(3) not null
 );
 
 create table realm_attribute
@@ -33,7 +33,7 @@ create table client
 (
     id       varchar(36) primary key,
     realm_id varchar(36) references realm (id),
-    name     varchar(255),
+    name     varchar(255) not null,
     secret   varchar(255),
     unique (realm_id, name)
 );
@@ -44,7 +44,8 @@ create table user_details
 (
     id       varchar(36) primary key,
     realm_id varchar(36) references realm (id),
-    name     varchar(255)
+    name     varchar(255) not null,
+    unique (realm_id, name)
 );
 create index user_details_realm_id_idx on user_details (realm_id);
 create index user_details_name_idx on user_details (name);
@@ -91,11 +92,11 @@ create table user_coin
 
 create table coin_transaction
 (
-    id                 varchar(36) primary key,
-    realm_id           varchar(36) references realm (id),
-    user_id            varchar(36) references user_details (id),
-    coin_id            varchar(36) references coin (id),
-    type               varchar(20),
-    coins_transacted   int,
-    creation_time      timestamp with time zone default now()
+    id               varchar(36) primary key,
+    realm_id         varchar(36) references realm (id),
+    user_id          varchar(36) references user_details (id),
+    coin_id          varchar(36) references coin (id),
+    type             varchar(20) not null,
+    coins_transacted int,
+    creation_time    timestamp with time zone default now()
 );
