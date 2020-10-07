@@ -153,7 +153,7 @@ public class CoinServiceImpl implements CoinService
         String realmId = realmService.getRealm(realmName).getId();
         String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
 
-        return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.finAllByRealmIdAndUserId(realmId, userId));
-
+        return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.findAllByRealmIdAndUserId(realmId,
+                                                                                                            userId));
     }
 }

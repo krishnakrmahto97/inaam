@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CoinTransactionRepository extends JpaRepository<CoinTransaction, String>
 {
-    List<CoinTransaction> finAllByRealmIdAndUserId(String realmId, String userId);
+    List<CoinTransaction> findAllByRealmIdAndUserId(String realmId, String userId);
 }
