@@ -22,7 +22,7 @@ public class GroupController
     }
 
     @GetMapping("/{realm}/group")
-    public List<String> listGroup(@PathVariable String realm)
+    public List<String> listGroups(@PathVariable String realm)
     {
         return groupService.getGroups(realm);
     }
@@ -35,7 +35,7 @@ public class GroupController
     }
 
     @GetMapping("/{realm}/group/{groupName}")
-    public List<String> addUser(@PathVariable String realm, @PathVariable String groupName)
+    public List<String> getUsers(@PathVariable String realm, @PathVariable String groupName)
     {
         return groupService.getGroupUsers(realm, groupName);
     }

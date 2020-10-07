@@ -47,6 +47,9 @@ public class RealmServiceImpl implements RealmService
     public List<RealmDto> listRealm()
     {
         List<Realm> realms = realmRepository.findAll();
+        // TODO: [Optional]
+        //  refactor method name toRealmDto to toRealmDtos or toRealmDtoList
+        //  realmTransformer.toRealmDtoList(realmRepository.findAll())
         return realmTransformer.toRealmDto(realms);
     }
 

@@ -8,7 +8,7 @@ public interface GroupService
 
     List<String> getGroups(String realm);
 
-    List<String> getGroupUsers(String realmName,String groupName);
+    List<String> getGroupUsers(String realm,String group);
 
     void addUser(String realm, String group, String user);
 

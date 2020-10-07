@@ -1,38 +1,62 @@
 package io.inaam.main.controller;
 
+import io.inaam.main.dto.CoinDto;
+import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserCoinDto;
+import io.inaam.main.service.CoinService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@AllArgsConstructor
+@RequestMapping("/{realmName}/coin")
 public class CoinController
 {
+    private final CoinService coinService;
 
-    @PostMapping("/{{realm}}/coin/")
-    public void createCoin(@PathVariable String realm)
+    @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createCoin(@PathVariable String realmName, @RequestBody CoinDto coin)
     {
-
+        coinService.createCoin(coin, realmName);
     }
 
-    @GetMapping("/{{realm}}/coin/{{username}}")
-    public void getCoinType(@PathVariable String realm, @PathVariable String username)
+    @GetMapping("/")
+    public List<CoinDto> getCoins(@PathVariable String realmName)
     {
-
+        return coinService.getCoins(realmName);
     }
 
-    @GetMapping("/{{realm}}/coin/balance")
-    public void getCoinBalance(@PathVariable String realm)
+    @PutMapping("/{coinName}")
+    public CoinDto updateCoin(@PathVariable String realmName, @PathVariable String coinName, @RequestBody CoinDto coin)
     {
-
+        return coinService.updateCoin(realmName, coinName, coin);
+    }
+    
+    @GetMapping("/{userName}")
+    public List<UserCoinDto> getUserCoins(@PathVariable String realmName, @PathVariable String userName)
+    {
+        return coinService.getUserCoinDtoList(realmName, userName);
     }
 
-    @PostMapping("/{{realm}}/coin/{{username}}/add")
-    public void addCoin(@PathVariable String realm, @PathVariable String username)
+    @GetMapping("/{userName}/transaction")
+    public List<CoinTransactionDto> getCoinTransactions(@PathVariable String realmName, @PathVariable String userName)
     {
-
+        return coinService.getUserCoinTransactionDtoList(realmName, userName);
     }
 
-    @PutMapping("/{{realm}}/coin/{{username}}/deduct")
-    public void deductCoin(@PathVariable String realm, @PathVariable String username)
+    @PutMapping("/{userName}/add")
+    public List<UserCoinDto> addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> addCoinsDetails)
     {
+        return coinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
+    }
 
+    @PutMapping ("/{userName}/redeem")
+    public List<UserCoinDto> redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> redeemCoinsDetails)
+    {
+        return coinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
     }
 }

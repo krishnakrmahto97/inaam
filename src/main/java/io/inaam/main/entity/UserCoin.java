@@ -1,14 +1,17 @@
 package io.inaam.main.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 
 @Data
 @Entity
 @Table(name = "user_coin")
 @IdClass(UserCoinPK.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCoin
 {
     @Id
@@ -19,11 +22,7 @@ public class UserCoin
     @Column(name = "coin_id", nullable = false)
     private String coinId;
 
-//    @OneToOne
-//    @JoinColumn(name = "coin_id", referencedColumnName = "id", insertable = false, updatable = false)
-//    private Coin coin;
-
     @Basic
     @Column(name = "balance")
-    private Integer balance;
+    private int balance;
 }
