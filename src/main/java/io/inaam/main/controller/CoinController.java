@@ -24,7 +24,7 @@ public class CoinController
         coinService.createCoin(coin, realmName);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<CoinDto> getCoins(@PathVariable String realmName)
     {
         return coinService.getCoins(realmName);
