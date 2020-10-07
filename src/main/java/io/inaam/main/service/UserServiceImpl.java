@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService
 
 
     @Override
-    public UserDetails getUser(String name, String realmId)
+    public UserDetails getUserByNameAndRealmId(String name, String realmId)
     {
         return userRepository.findByNameAndRealmId(name, realmId);
     }
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public List<String> getUsernames(List<String> userIds)
+    public List<String> getUserNames(List<String> userIds)
     {
         List<UserDetails> allByIdIn = userRepository.findAllByIdIn(userIds);
         return userTransformer.toUserNames(allByIdIn);

@@ -47,7 +47,7 @@ public class GroupServiceImpl implements GroupService
                                                   .map(UserGroup::getUserId)
                                                   .collect(Collectors.toList());
 
-        return userService.getUsernames(userIds);
+        return userService.getUserNames(userIds);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GroupServiceImpl implements GroupService
     {
         String realmId = realmService.getRealmId(realm);
         String groupId = groupRepository.findByNameAndRealmId(group, realmId).getId();
-        String userId = userService.getUser(user, realmId).getId();
+        String userId = userService.getUserByNameAndRealmId(user, realmId).getId();
 
         UserGroup userGroup = groupTransformer.toUserGroup(userId, groupId);
         userGroupRepository.save(userGroup);
@@ -66,7 +66,7 @@ public class GroupServiceImpl implements GroupService
     {
         String realmId = realmService.getRealmId(realm);
         String groupId = groupRepository.findByNameAndRealmId(group, realmId).getId();
-        String userId = userService.getUser(user, realmId).getId();
+        String userId = userService.getUserByNameAndRealmId(user, realmId).getId();
 
         UserGroupPK userGroupPK = groupTransformer.toUserGroupPK(userId, groupId);
         userGroupRepository.deleteById(userGroupPK);
