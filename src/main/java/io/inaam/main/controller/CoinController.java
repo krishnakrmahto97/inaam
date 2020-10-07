@@ -17,7 +17,7 @@ public class CoinController
 {
     private final CoinService coinService;
 
-    @PostMapping("/")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createCoin(@PathVariable String realmName, @RequestBody CoinDto coin)
     {
