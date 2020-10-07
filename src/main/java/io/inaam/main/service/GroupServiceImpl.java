@@ -68,6 +68,8 @@ public class GroupServiceImpl implements GroupService
         String groupId = groupRepository.findByNameAndRealmId(group, realmId).getId();
         String userId = userService.getUserByNameAndRealmId(user, realmId).getId();
 
+        // TODO: [Optional]
+        //  userGroupRepository.deleteById(groupTransformer.toUserGroupPK(userId, groupId));
         UserGroupPK userGroupPK = groupTransformer.toUserGroupPK(userId, groupId);
         userGroupRepository.deleteById(userGroupPK);
     }
