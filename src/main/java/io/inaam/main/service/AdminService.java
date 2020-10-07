@@ -1,5 +1,9 @@
 package io.inaam.main.service;
 
+import io.inaam.main.dto.AdminDto;
+
 public interface AdminService {
-    void addAdminUser(String username, String password);
+    void addAdminUser(AdminDto adminDto);
+
+    boolean authenticate(AdminDto adminDto);
 }

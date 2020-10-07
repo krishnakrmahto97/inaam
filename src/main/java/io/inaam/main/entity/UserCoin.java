@@ -25,5 +25,5 @@ public class UserCoin
 
     @Basic
     @Column(name = "balance")
-    private BigInteger balance;
+    private Integer balance;
 }
