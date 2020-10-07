@@ -76,15 +76,26 @@ create table coin
 (
     id              varchar(36) primary key,
     realm_id        varchar(36) references realm (id),
-    name            varchar(255) not null,
-    conversion_rate numeric(10, 2),
+    name            varchar(255)   not null,
+    conversion_rate numeric(10, 2) not null,
     unique (realm_id, name)
 );
 
 create table user_coin
 (
     user_id varchar(36) references user_details (id),
-    coin_id varchar(36) references user_details (id),
-    balance numeric,
+    coin_id varchar(36) references coin (id),
+    balance int,
     primary key (user_id, coin_id)
+);
+
+create table coin_transaction
+(
+    id                 varchar(36) primary key,
+    realm_id           varchar(36) references realm (id),
+    user_id            varchar(36) references user_details (id),
+    coin_id            varchar(36) references coin (id),
+    type               varchar(20),
+    coins_transacted   int,
+    creation_time      timestamp with time zone default now()
 );
