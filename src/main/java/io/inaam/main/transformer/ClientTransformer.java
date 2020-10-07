@@ -11,8 +11,8 @@ public interface ClientTransformer {
     Client toClient(ClientDto clientDto);
 
     @Mapping(target = "realmId", source = "realmId")
-    @Mapping(target = "secret", defaultValue = "secret")
-    Client toClient(ClientDto clientDto, String realmId, String secret);
+    @Mapping(target = "secret", expression = "java(java.util.UUID.randomUUID().toString())")
+    Client toClient(ClientDto clientDto, String realmId);
 
     ClientDto toClientDto(Client client);
 

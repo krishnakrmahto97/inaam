@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -21,9 +20,8 @@ public class ClientServiceImpl implements ClientService {
     private final ClientTransformer clientTransformer;
 
     public String createClient(String realm, ClientDto clientDto) {
-        String secret = UUID.randomUUID().toString();
         String realmId = realmService.getRealmId(realm);
-        Client client = clientTransformer.toClient(clientDto, realmId, secret);
+        Client client = clientTransformer.toClient(clientDto, realmId );
         return clientRepository.save(client).getSecret();
     }
 
