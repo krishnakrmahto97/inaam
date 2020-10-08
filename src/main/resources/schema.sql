@@ -1,10 +1,3 @@
-create database inaam;
-
----------------------------------------------------
---  Run after switching to inaam database
----------------------------------------------------
-
-
 create table admin
 (
     id     varchar(36) primary key,
@@ -16,6 +9,7 @@ create table realm
 (
     id              varchar(36) primary key,
     name            varchar(255) unique,
+    status          varchar(10) default 'Active',
     currency_symbol varchar(3) not null
 );
 
@@ -44,6 +38,7 @@ create table user_details
 (
     id       varchar(36) primary key,
     realm_id varchar(36) references realm (id),
+    status   varchar(10) default 'Active',
     name     varchar(255) not null,
     unique (realm_id, name)
 );
@@ -63,6 +58,7 @@ create table group_details
     id       varchar(36) primary key,
     realm_id varchar(36) references realm (id),
     name     varchar(255) not null,
+    status   varchar(10) default 'Active',
     unique (realm_id, name)
 );
 
