@@ -30,7 +30,8 @@ public class GroupDetails
     @Column(name = "name", nullable = false)
     private String name;
 
-//    @OneToMany(mappedBy = "groupDetailsByGroupId")
-//    private Collection<UserGroup> userGroupsById;
-
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.Active;
 }

@@ -1,12 +1,14 @@
 package io.inaam.main.service;
 
+import io.inaam.main.dto.GroupDto;
+
 import java.util.List;
 
 public interface GroupService
 {
     void createGroup(String realm, String group);
 
-    List<String> getGroups(String realm);
+    List<GroupDto> getGroups(String realm);
 
     List<String> getGroupUsers(String realm,String group);
 
