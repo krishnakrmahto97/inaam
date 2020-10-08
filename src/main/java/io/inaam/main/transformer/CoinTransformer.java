@@ -29,6 +29,7 @@ public interface CoinTransformer
                                             String userId,
                                             CoinTransactionType type);
 
+    @Mapping(source = "coinEntity.name", target = "coinName")
     UserCoinDto toUserCoinDto (Coin coinEntity, UserCoin userCoinEntity);
 
     List<CoinTransactionDto> toCoinTransactionDtoList (List<CoinTransaction> coinTransactions);
