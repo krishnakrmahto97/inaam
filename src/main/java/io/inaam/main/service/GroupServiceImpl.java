@@ -1,5 +1,6 @@
 package io.inaam.main.service;
 
+import io.inaam.main.dto.GroupDto;
 import io.inaam.main.entity.GroupDetails;
 import io.inaam.main.entity.UserGroup;
 import io.inaam.main.entity.UserGroupPK;
@@ -30,10 +31,10 @@ public class GroupServiceImpl implements GroupService
     }
 
     @Override
-    public List<String> getGroups(String realm)
+    public List<GroupDto> getGroups(String realm)
     {
         List<GroupDetails> groups = groupRepository.findByRealmId(realmService.getRealmId(realm));
-        return groupTransformer.toGroupNames(groups);
+        return groupTransformer.toGroupDtoList(groups);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class GroupServiceImpl implements GroupService
                                                   .map(UserGroup::getUserId)
                                                   .collect(Collectors.toList());
 
-        return userService.getUserNames(userIds);
+        return userService.getUsernames(userIds);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class GroupServiceImpl implements GroupService
     {
         String realmId = realmService.getRealmId(realm);
         String groupId = groupRepository.findByNameAndRealmId(group, realmId).getId();
-        String userId = userService.getUserByNameAndRealmId(user, realmId).getId();
+        String userId = userService.getUserId(user, realmId);
 
         UserGroup userGroup = groupTransformer.toUserGroup(userId, groupId);
         userGroupRepository.save(userGroup);
@@ -66,7 +67,7 @@ public class GroupServiceImpl implements GroupService
     {
         String realmId = realmService.getRealmId(realm);
         String groupId = groupRepository.findByNameAndRealmId(group, realmId).getId();
-        String userId = userService.getUserByNameAndRealmId(user, realmId).getId();
+        String userId = userService.getUserId(user, realmId);
 
         // TODO: [Optional]
         //  userGroupRepository.deleteById(groupTransformer.toUserGroupPK(userId, groupId));

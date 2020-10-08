@@ -1,5 +1,6 @@
 package io.inaam.main.dto;
 
+import io.inaam.main.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttributeDto
+public class StatusDto
 {
-    String name;
-    String value;
+    Status current;
+    Status updateTo;
 }

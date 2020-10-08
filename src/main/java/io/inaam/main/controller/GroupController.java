@@ -1,5 +1,6 @@
 package io.inaam.main.controller;
 
+import io.inaam.main.dto.GroupDto;
 import io.inaam.main.dto.NameDto;
 import io.inaam.main.service.GroupService;
 import lombok.AllArgsConstructor;
@@ -22,12 +23,12 @@ public class GroupController
     }
 
     @GetMapping("/{realm}/group")
-    public List<String> listGroups(@PathVariable String realm)
+    public List<GroupDto> listGroups(@PathVariable String realm)
     {
         return groupService.getGroups(realm);
     }
 
-    @PostMapping("/{realm}/group/{groupName}")
+    @PostMapping("/{realm}/group/{groupName}/user")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void addUser(@PathVariable String realm, @PathVariable String groupName, @RequestBody NameDto nameDto)
     {
@@ -41,7 +42,7 @@ public class GroupController
     }
 
 
-    @DeleteMapping("/{realm}/group/{groupName}")
+    @DeleteMapping("/{realm}/group/{groupName}/user")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void removeUser(@PathVariable String realm,
                            @PathVariable String groupName,

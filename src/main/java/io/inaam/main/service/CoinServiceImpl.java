@@ -34,29 +34,31 @@ public class CoinServiceImpl implements CoinService
     @Override
     public void createCoin(CoinDto coinDto, String realmName)
     {
-        Coin coinEntity = coinTransformer.toCoinEntity(coinDto, realmService.getRealm(realmName).getId());
+        Coin coinEntity = coinTransformer.toCoinEntity(coinDto, realmService.getRealmId(realmName));
         coinRepository.save(coinEntity);
     }
 
     @Override
     public List<CoinDto> getCoins(String realmName)
     {
-        String realmId = realmService.getRealm(realmName).getId();
+        String realmId = realmService.getRealmId(realmName);
         return coinTransformer.toListOfCoinDto(coinRepository.findAllByRealmId(realmId));
     }
 
     @Override
     @Transactional
-    public List<UserCoinDto> createTransactionAndAddUserCoins(String realmName, String userName, List<UserCoinDto> userCoinDtoList)
+    public List<UserCoinDto> createTransactionAndAddUserCoins(String realmName,
+                                                              String userName,
+                                                              List<UserCoinDto> userCoinDtoList)
     {
-        String realmId = realmService.getRealm(realmName).getId();
-        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
+        String realmId = realmService.getRealmId(realmName);
+        String userId = userService.getUserId(userName, realmId);
 
         List<UserCoinDto> updatedTransactionDtoList = new ArrayList<>();
 
         userCoinDtoList.forEach(userCoinDto -> {
             Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException("Coin type not found!"));
+                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
 
             coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
                                                                                    coinEntity,
@@ -79,16 +81,18 @@ public class CoinServiceImpl implements CoinService
 
     @Override
     @Transactional
-    public List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName, String userName, List<UserCoinDto> userCoinDtoList)
+    public List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName,
+                                                                 String userName,
+                                                                 List<UserCoinDto> userCoinDtoList)
     {
         String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
+        String userId = userService.getUserId(userName, realmId);
 
         List<UserCoinDto> updatedTransactionDtoList = new ArrayList<>();
 
         userCoinDtoList.forEach(userCoinDto -> {
             Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException("Coin type not found!"));
+                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
 
             userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
                               .filter(userCoin -> userCoin.getBalance() >= userCoinDto.getCoinCount())
@@ -118,20 +122,21 @@ public class CoinServiceImpl implements CoinService
     public List<UserCoinDto> getUserCoinDtoList(String realmName, String userName)
     {
         String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
+        String userId = userService.getUserId(userName, realmId);
 
         return userCoinRepository.findAllByUserId(userId)
                                  .stream()
                                  .map(userCoinEntity -> coinRepository.findById(userCoinEntity.getCoinId())
-                                                                       .map(coinEntity -> coinTransformer.toUserCoinDto(coinEntity, userCoinEntity))
-                                                                       .orElseThrow(() -> new CoinException("Coin type not found!")))
+                                                                      .map(coinEntity -> coinTransformer.toUserCoinDto(coinEntity, userCoinEntity))
+                                                                      .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND)))
                                  .collect(Collectors.toList());
     }
 
     private void updateUserCoins(UserCoin userCoin, int coinCountInTransaction, CoinTransactionType transactionType)
     {
-        int updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType) ? userCoin.getBalance() + coinCountInTransaction :
-                                 userCoin.getBalance() - coinCountInTransaction;
+        int updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType)
+                ? userCoin.getBalance() + coinCountInTransaction
+                : userCoin.getBalance() - coinCountInTransaction;
         userCoin.setBalance(updatedCoinBalance);
         userCoinRepository.save(userCoin);
     }
@@ -140,7 +145,7 @@ public class CoinServiceImpl implements CoinService
     public List<CoinTransactionDto> getUserCoinTransactionDtoList(String realmName, String userName)
     {
         String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserByNameAndRealmId(userName, realmId).getId();
+        String userId = userService.getUserId(userName, realmId);
 
         return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.findAllByRealmIdAndUserId(realmId,
                                                                                                             userId));
@@ -151,7 +156,7 @@ public class CoinServiceImpl implements CoinService
     public CoinDto updateCoin(String realmName, String coinName, CoinDto coinDto)
     {
         Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealmId(realmName), coinName)
-                                        .orElseThrow(() -> new CoinException("Coin type not found!"));
+                                        .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
         coinEntity.setName(coinDto.getName());
         coinEntity.setConversionRate(coinDto.getConversionRate());
         return coinTransformer.toCoinDto(coinRepository.save(coinEntity));

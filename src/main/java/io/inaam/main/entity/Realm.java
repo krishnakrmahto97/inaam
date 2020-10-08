@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table
 public class Realm
 {
     @Id
@@ -30,6 +31,11 @@ public class Realm
     @Basic
     @Column(name = "currency_symbol")
     private String currencySymbol;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.Active;
 
     @OneToMany
     @JoinColumn(name = "realm_id", referencedColumnName = "id", updatable = false, insertable = false)

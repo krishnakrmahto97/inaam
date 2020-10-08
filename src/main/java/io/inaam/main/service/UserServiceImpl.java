@@ -1,7 +1,10 @@
 package io.inaam.main.service;
 
+import io.inaam.main.dto.AttributeDto;
 import io.inaam.main.dto.UserDto;
+import io.inaam.main.entity.Status;
 import io.inaam.main.entity.UserDetails;
+import io.inaam.main.exception.UserException;
 import io.inaam.main.repository.UserAttributeRepository;
 import io.inaam.main.repository.UserRepository;
 import io.inaam.main.transformer.UserTransformer;
@@ -20,11 +23,23 @@ public class UserServiceImpl implements UserService
     private final UserAttributeRepository userAttributeRepository;
     private final UserTransformer userTransformer;
 
+    @Override
+    public String getUserId(String name, String realmId)
+    {
+        return getUserEntity(name, realmId).getId();
+    }
 
     @Override
-    public UserDetails getUserByNameAndRealmId(String name, String realmId)
+    public UserDto getUser(String name, String realmName)
     {
-        return userRepository.findByNameAndRealmId(name, realmId);
+        String realmId = realmService.getRealmId(realmName);
+        return userTransformer.toUserDto(getUserEntity(name, realmId));
+    }
+
+    private UserDetails getUserEntity(String name, String realmId)
+    {
+        return Optional.ofNullable(userRepository.findByNameAndRealmId(name, realmId))
+                       .orElseThrow(() -> new UserException(UserException.NO_ACTIVE_USER));
     }
 
     @Override
@@ -47,9 +62,32 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public List<String> getUserNames(List<String> userIds)
+    public List<String> getUsernames(List<String> userIds)
     {
         List<UserDetails> allByIdIn = userRepository.findAllByIdIn(userIds);
         return userTransformer.toUserNames(allByIdIn);
+    }
+
+    @Override
+    public void addAttribute(String realm, String userName, AttributeDto attribute)
+    {
+        String userId = getUserId(userName, realmService.getRealmId(realm));
+        userAttributeRepository.save(userTransformer.toUserAttribute(attribute, userId));
+    }
+
+    @Override
+    public void removeAttribute(String realm, String userName, AttributeDto attribute)
+    {
+        String userId = getUserId(userName, realmService.getRealmId(realm));
+        userAttributeRepository.delete(userTransformer.toUserAttribute(attribute, userId));
+    }
+
+    @Override
+    public void updateStatus(String realm, String userName, Status current, Status updateTo)
+    {
+        String realmId = realmService.getRealmId(realm);
+        UserDetails user = userRepository.findByNameAndRealmIdAndStatus(userName, realmId, current);
+        user.setStatus(updateTo);
+        userRepository.save(user);
     }
 }

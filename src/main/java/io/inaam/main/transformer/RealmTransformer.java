@@ -23,6 +23,6 @@ public interface RealmTransformer
 
     List<AttributeDto> toAttributeDtoList(List<RealmAttribute> attributes);
 
-    List<RealmDto> toRealmDto(List<Realm> realmDto);
+    List<RealmDto> toRealmDtoList(List<Realm> realms);
 
 }
