@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/{realmName}/coins")
-
 public class CoinController
 {
     private final CoinService coinService;
