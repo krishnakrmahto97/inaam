@@ -7,6 +7,7 @@ import io.inaam.main.transformer.ClientTransformer;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.save(client).getSecret();
     }
 
+    @RolesAllowed({"ROLE_CLIENT"})
     public List<Client> getClients(String realm) {
         return clientRepository.findByRealmId(realmService.getRealmId(realm));
     }

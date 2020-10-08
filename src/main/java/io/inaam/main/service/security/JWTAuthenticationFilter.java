@@ -2,6 +2,7 @@ package io.inaam.main.service.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.inaam.main.dto.JwtTokenDto;
 import io.inaam.main.exception.InaamRuntimeException;
@@ -17,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
-import java.util.StringJoiner;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -26,18 +27,18 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl("/client/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
-            ClientAuthenticationRequest authenticationRequest = new JsonMapper()
-                    .readValue(request.getInputStream(), ClientAuthenticationRequest.class);
-            return authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(generatePrincipal(authenticationRequest.getName(),
-                            authenticationRequest.getRealmName()),
-                            authenticationRequest.getSecret()));
+            AuthenticationDto authenticationDto = new JsonMapper().readValue(request.getInputStream(),
+                    AuthenticationDto.class);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    authenticationDto.getPrincipal(),
+                    authenticationDto.getSecret(),
+                    Collections.emptyList());
+            return authenticationManager.authenticate(token);
         } catch (IOException e) {
             throw new InaamRuntimeException("Error while trying to read credentials.", e);
         }
@@ -52,30 +53,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = JWT.create()
                 .withSubject(((User) authResult.getPrincipal()).getUsername())
                 .withClaim("typ", "Bearer")
-                .withExpiresAt(Date.from(Instant.now().plusSeconds(SecurityConstants.EXPIRATION_TIME)))
+                .withExpiresAt(Date.from(Instant.now().plusSeconds(SecurityConstants.ACCESS_TOKEN_EXPIRATION_TIME)))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET));
 
-        /*
-         * Skipping refresh-token for now.
-         */
-
+        // TODO: 08/10/2020 Skipped due to time constraint. To be uncommented once refresh token validation has been implemented. 
 //        String refreshToken = JWT.create()
 //                .withSubject(((User) authResult.getPrincipal()).getUsername())
 //                .withClaim("typ", "Refresh")
-//                .withExpiresAt(Date.from(Instant.now().plusSeconds(SecurityConstants.EXPIRATION_TIME)))
+//                .withExpiresAt(Date.from(Instant.now().plusSeconds(SecurityConstants.REFRESH_TOKEN_EXPIRATION_TIME)))
 //                .sign(Algorithm.HMAC512(SecurityConstants.SECRET));
 
-        JwtTokenDto jwtTokenDto = new JwtTokenDto(accessToken);
+        JwtTokenDto jwtTokenDto = new JwtTokenDto(accessToken, null);
+
         response.setContentType(MediaType.APPLICATION_JSON.toString());
-        response.getWriter().write(new JsonMapper().writeValueAsString(jwtTokenDto));
+        response.getWriter().write(new JsonMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .writeValueAsString(jwtTokenDto));
         response.getWriter().flush();
     }
 
-    private String generatePrincipal(String clientName, String realmName) {
-        return new StringJoiner("_")
-                .add("CLIENT")
-                .add(realmName)
-                .add(clientName)
-                .toString();
-    }
 }

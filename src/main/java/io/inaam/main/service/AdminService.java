@@ -1,5 +1,11 @@
 package io.inaam.main.service;
 
+import io.inaam.main.dto.AdminDto;
+
+import java.util.List;
+
 public interface AdminService {
-    void addAdminUser(String username, String password);
+    void createAdmin(AdminDto adminDto);
+
+    List<AdminDto> getAdmins();
 }

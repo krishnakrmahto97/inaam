@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class JwtTokenDto {
     private String accessToken;
-//    private String refreshToken;
+    private String refreshToken;
 }
