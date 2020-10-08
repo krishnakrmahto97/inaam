@@ -31,6 +31,11 @@ public class UserDetails
     @Column(name = "name")
     private String name;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.Active;
+
     @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<UserGroup> groups;

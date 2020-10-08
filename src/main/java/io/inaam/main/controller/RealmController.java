@@ -1,6 +1,8 @@
 package io.inaam.main.controller;
 
+import io.inaam.main.dto.AttributeDto;
 import io.inaam.main.dto.RealmDto;
+import io.inaam.main.dto.StatusDto;
 import io.inaam.main.service.RealmService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,33 @@ public class RealmController
         realmService.createRealm(realmDto);
     }
 
-    @GetMapping("/realm")
+    @GetMapping("/realms")
     public List<RealmDto> listRealm()
     {
         return realmService.listRealm();
+    }
+
+    @GetMapping("/realm/{realmName}")
+    public RealmDto getRealm(@PathVariable String realmName)
+    {
+        return realmService.getRealm(realmName);
+    }
+
+    @PostMapping("/realm/{realmName}/status")
+    public void deactivateRealm(@PathVariable String realmName, @RequestBody StatusDto status)
+    {
+        realmService.updateStatus(realmName,status.getCurrent(),status.getUpdateTo());
+    }
+
+    @PostMapping("/realm/{realmName}/attribute")
+    public void addAttribute(@PathVariable String realmName, @RequestBody AttributeDto attribute)
+    {
+        realmService.addAttribute(realmName,attribute);
+    }
+
+    @DeleteMapping("/realm/{realmName}/attribute")
+    public void removeAttribute(@PathVariable String realmName,@RequestBody AttributeDto attribute)
+    {
+        realmService.removeAttribute(realmName,attribute);
     }
 }
