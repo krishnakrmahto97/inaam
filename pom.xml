@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>15</java.version>
+        <springfox.version>2.9.2</springfox.version>
     </properties>
 
 <!--    todo: uncomment spppring security dependency when auth handling is implemented-->
@@ -75,6 +76,18 @@
         <!--            <artifactId>spring-security-test</artifactId>-->
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
