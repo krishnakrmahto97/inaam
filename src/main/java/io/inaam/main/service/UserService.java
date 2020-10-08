@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface UserService
 {
-    UserDetails getUser(String name, String realmId);
+    UserDetails getUserByNameAndRealmId(String name, String realmId);
 
     List<UserDto> getUsers(String realmName);
 
     void createUser(String realm, UserDto userDto);
 
-    List<String> getUsernames(List<String> userIds);
+    List<String> getUserNames(List<String> userIds);
 }

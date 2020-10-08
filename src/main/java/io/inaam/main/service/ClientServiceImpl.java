@@ -19,6 +19,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientTransformer clientTransformer;
 
+    // TODO: [Optional] rename realm to realmName (Realm is also an entity name)
     public String createClient(String realm, ClientDto clientDto) {
         String realmId = realmService.getRealmId(realm);
         Client client = clientTransformer.toClient(clientDto, realmId );
