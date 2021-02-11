@@ -82,7 +82,7 @@ create table user_coin
 (
     user_id varchar(36) references user_details (id),
     coin_id varchar(36) references coin (id),
-    balance int,
+    balance bigint,
     primary key (user_id, coin_id)
 );
 
