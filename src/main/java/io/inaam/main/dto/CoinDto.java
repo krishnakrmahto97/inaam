@@ -8,5 +8,6 @@ import java.math.BigDecimal;
 public class CoinDto
 {
     private String name;
-    private BigDecimal conversionRate;
+    private BigDecimal monetaryValuePerCoin;
+    private BigDecimal monetaryAmountToEarnOneCoin;
 }

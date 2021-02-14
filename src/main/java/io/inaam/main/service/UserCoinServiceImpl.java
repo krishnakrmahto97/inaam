@@ -6,6 +6,7 @@ import io.inaam.main.entity.Coin;
 import io.inaam.main.entity.UserCoin;
 import io.inaam.main.entity.UserCoinPK;
 import io.inaam.main.exception.CoinException;
+import io.inaam.main.exception.UserCoinException;
 import io.inaam.main.repository.CoinRepository;
 import io.inaam.main.repository.CoinTransactionRepository;
 import io.inaam.main.repository.UserCoinRepository;
@@ -15,8 +16,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -58,7 +63,7 @@ public class UserCoinServiceImpl implements UserCoinService
 
         userCoinDtoList.forEach(userCoinDto -> {
             Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
+                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
 
             coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
                                                                                    coinEntity,
@@ -92,7 +97,7 @@ public class UserCoinServiceImpl implements UserCoinService
 
         userCoinDtoList.forEach(userCoinDto -> {
             Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
+                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
 
             userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
                               .filter(userCoin -> userCoin.getBalance() >= userCoinDto.getCoinCount())
@@ -125,5 +130,25 @@ public class UserCoinServiceImpl implements UserCoinService
                                  : userCoin.getBalance() - coinCountInTransaction;
         userCoin.setBalance(updatedCoinBalance);
         userCoinRepository.save(userCoin);
+    }
+
+    @Override
+    public UserCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchasePrice)
+    {
+        String realmId = realmService.getRealmId(realmName);
+        String userId = userService.getUserId(userName, realmId);
+
+        List<UserCoin> userCoins = userCoinRepository.findAllByUserId(userId);
+
+        userCoins.forEach(userCoin -> {
+            String coinId = userCoin.getCoinId();
+            Optional<Coin> coinEntity = coinRepository.findById(coinId);
+            BigInteger coinEquivalentOfPurcha =
+                    coinEntity.map(coin -> purchasePrice.divide(coin.getMonetaryAmountToEarnOneCoin(), RoundingMode.FLOOR)
+                                                        .toBigInteger())
+                              .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
+
+
+        });
     }
 }

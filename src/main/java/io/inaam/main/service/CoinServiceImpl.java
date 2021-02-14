@@ -1,24 +1,15 @@
 package io.inaam.main.service;
 
 import io.inaam.main.dto.CoinDto;
-import io.inaam.main.dto.CoinTransactionDto;
-import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.entity.Coin;
-import io.inaam.main.entity.UserCoin;
-import io.inaam.main.entity.UserCoinPK;
 import io.inaam.main.exception.CoinException;
 import io.inaam.main.repository.CoinRepository;
-import io.inaam.main.repository.CoinTransactionRepository;
-import io.inaam.main.repository.UserCoinRepository;
 import io.inaam.main.transformer.CoinTransformer;
-import io.inaam.main.util.CoinTransactionType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -47,9 +38,9 @@ public class CoinServiceImpl implements CoinService
     public CoinDto updateCoin(String realmName, String coinName, CoinDto coinDto)
     {
         Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealmId(realmName), coinName)
-                                        .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
+                                        .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
         coinEntity.setName(coinDto.getName());
-        coinEntity.setMonetaryValuePerCoin(coinDto.getConversionRate());
+        coinEntity.setMonetaryValuePerCoin(coinDto.getMonetaryValuePerCoin());
         return coinTransformer.toCoinDto(coinRepository.save(coinEntity));
     }
 }

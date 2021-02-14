@@ -1,6 +1,7 @@
 package io.inaam.main.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,8 @@ public class UserCoin
     @Basic
     @Column(name = "balance")
     private int balance;
+
+    @Embedded
+    @Builder.Default
+    private TimeAttribute timeAttribute = new TimeAttribute();
 }

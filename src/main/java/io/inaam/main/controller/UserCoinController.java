@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -32,15 +33,28 @@ public class UserCoinController
 
     @PutMapping("/addCoins")
     @ApiOperation(value = "Add coins under a user")
-    public List<UserCoinDto> addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> addCoinsDetails)
+    public List<UserCoinDto> addUserCoins(@PathVariable String realmName,
+                                          @PathVariable String userName,
+                                          @RequestBody List<UserCoinDto> addCoinsDetails)
     {
         return userCoinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
     }
 
     @PutMapping ("/redeemCoins")
     @ApiOperation(value = "Redeem user coins")
-    public List<UserCoinDto> redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> redeemCoinsDetails)
+    public List<UserCoinDto> redeemUserCoins(@PathVariable String realmName,
+                                             @PathVariable String userName,
+                                             @RequestBody List<UserCoinDto> redeemCoinsDetails)
     {
         return userCoinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
+    }
+
+    @PostMapping("/addAndRedeemCoins")
+    @ApiOperation(value = "Add and redeem user coins based on purchase amount")
+    public UserCoinDto addAndRedeemCoins(@PathVariable String realmName,
+                                         @PathVariable String userName,
+                                         @RequestBody BigDecimal purchaseAmount)
+    {
+        return userCoinService.addAndRedeemCoins(realmName, userName, purchaseAmount);
     }
 }
