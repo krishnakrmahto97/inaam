@@ -137,8 +137,8 @@ public class UserCoinServiceImpl implements UserCoinService
 
         List<UserCoin> userCoins = userCoinRepository.findAllByUserIdAAndBalanceNotZeroOrderByCreationTime(userId);
 
-        BigInteger coinsRedeemed = BigInteger.ZERO;
-        BigDecimal discountApplicable = BigDecimal.ZERO;
+        BigInteger totalCoinsRedeemed = BigInteger.ZERO;
+        BigDecimal totalDiscountApplicable = BigDecimal.ZERO;
         List<UserCoinDto> userCoinDtoList = new ArrayList<>();
         for(UserCoin userCoin: userCoins)
         {
@@ -149,23 +149,38 @@ public class UserCoinServiceImpl implements UserCoinService
             BigInteger coinEquivalentOfPurchasePrice = purchasePrice.divide(coinEntity.getMonetaryAmountToEarnOneCoin(), RoundingMode.FLOOR)
                                                                     .toBigInteger();
 
-            userCoinDtoList.add(userCoinTransformer.toUserCoinDto(coinEntity, userCoin));
+            UserCoinDto userCoinDto = userCoinTransformer.toUserCoinDto(coinEntity, userCoin);
+            userCoinDtoList.add(userCoinDto);
             if (userCoin.getBalance().compareTo(coinEquivalentOfPurchasePrice) >= 0)
             {
-                coinsRedeemed = coinsRedeemed.add(coinEquivalentOfPurchasePrice);
-                discountApplicable = discountApplicable.add(purchasePrice);
+                totalCoinsRedeemed = totalCoinsRedeemed.add(coinEquivalentOfPurchasePrice);
+                totalDiscountApplicable = totalDiscountApplicable.add(purchasePrice);
+                coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
+                                                                                       coinEntity,
+                                                                                       realmId,
+                                                                                       userId,
+                                                                                       CoinTransactionType.REDEEM));
                 userCoin.setBalance(userCoin.getBalance().subtract(coinEquivalentOfPurchasePrice));
             }
 
             else
             {
-                coinsRedeemed = coinsRedeemed.add(userCoin.getBalance());
-                discountApplicable = discountApplicable.add(new BigDecimal(userCoin.getBalance()).multiply(coinEntity.getMonetaryValuePerCoin()));
-                purchasePrice = purchasePrice.subtract(discountApplicable);
+                totalCoinsRedeemed = totalCoinsRedeemed.add(userCoin.getBalance());
+
+                BigDecimal discountApplicableForRedeemedCoins =
+                        new BigDecimal(userCoin.getBalance()).multiply(coinEntity.getMonetaryValuePerCoin());
+
+                totalDiscountApplicable = totalDiscountApplicable.add(discountApplicableForRedeemedCoins);
+                purchasePrice = purchasePrice.subtract(discountApplicableForRedeemedCoins);
+                coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
+                                                                                       coinEntity,
+                                                                                       realmId,
+                                                                                       userId,
+                                                                                       CoinTransactionType.REDEEM));
                 userCoin.setBalance(BigInteger.ZERO);
             }
         }
 
-        return new UserAddAndRedeemCoinDto(userCoinDtoList, discountApplicable);
+        return new UserAddAndRedeemCoinDto(userCoinDtoList, totalDiscountApplicable);
     }
 }
