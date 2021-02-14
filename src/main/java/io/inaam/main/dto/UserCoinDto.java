@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Data
 @Builder
@@ -14,6 +14,5 @@ import java.math.BigDecimal;
 public class UserCoinDto
 {
     private String coinName;
-    private int coinCount;
-    private BigDecimal conversionRate;
+    private BigInteger coinCount;
 }

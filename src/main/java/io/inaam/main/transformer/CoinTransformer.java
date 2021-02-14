@@ -5,7 +5,6 @@ import io.inaam.main.dto.CoinTransactionDto;
 import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.entity.Coin;
 import io.inaam.main.entity.CoinTransaction;
-import io.inaam.main.entity.UserCoin;
 import io.inaam.main.util.CoinTransactionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,9 +27,6 @@ public interface CoinTransformer
                                             String realmId,
                                             String userId,
                                             CoinTransactionType type);
-
-    @Mapping(source = "coinEntity.name", target = "coinName")
-    UserCoinDto toUserCoinDto (Coin coinEntity, UserCoin userCoinEntity);
 
     List<CoinTransactionDto> toCoinTransactionDtoList (List<CoinTransaction> coinTransactions);
 }

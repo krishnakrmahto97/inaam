@@ -33,7 +33,7 @@ public class Coin
 
     @Basic
     @Column(name = "monetary_amount_to_earn_one_coin")
-    private int monetaryAmountToEarnOneCoin;
+    private BigDecimal monetaryAmountToEarnOneCoin;
 
     @Embedded
     @Builder.Default

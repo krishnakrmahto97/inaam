@@ -1,6 +1,7 @@
 package io.inaam.main.service;
 
 import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserAddAndRedeemCoinDto;
 import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.entity.Coin;
 import io.inaam.main.entity.UserCoin;
@@ -11,6 +12,7 @@ import io.inaam.main.repository.CoinRepository;
 import io.inaam.main.repository.CoinTransactionRepository;
 import io.inaam.main.repository.UserCoinRepository;
 import io.inaam.main.transformer.CoinTransformer;
+import io.inaam.main.transformer.UserCoinTransformer;
 import io.inaam.main.util.CoinTransactionType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +34,7 @@ public class UserCoinServiceImpl implements UserCoinService
     private final CoinTransactionRepository coinTransactionRepository;
     private final UserCoinRepository userCoinRepository;
     private final CoinTransformer coinTransformer;
+    private final UserCoinTransformer userCoinTransformer;
 
     @Override
     public List<UserCoinDto> getUserCoinDtoList(String realmName, String userName)
@@ -72,14 +74,10 @@ public class UserCoinServiceImpl implements UserCoinService
                                                                                    CoinTransactionType.ADD));
 
             UserCoin userCoin = userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
-                                                  .orElseGet(() -> new UserCoin(userId, coinEntity.getId(), 0));
+                                                  .orElseGet(() -> new UserCoin(userId, coinEntity.getId()));
 
             updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.ADD);
-            updatedTransactionDtoList.add(UserCoinDto.builder()
-                                                     .coinName(userCoinDto.getCoinName())
-                                                     .coinCount(userCoin.getBalance())
-                                                     .conversionRate(coinEntity.getMonetaryValuePerCoin())
-                                                     .build());
+            updatedTransactionDtoList.add(new UserCoinDto(userCoinDto.getCoinName(), userCoin.getBalance()));
         });
         return updatedTransactionDtoList;
     }
@@ -100,7 +98,7 @@ public class UserCoinServiceImpl implements UserCoinService
                                             .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
 
             userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
-                              .filter(userCoin -> userCoin.getBalance() >= userCoinDto.getCoinCount())
+                              .filter(userCoin -> userCoin.getBalance().compareTo(userCoinDto.getCoinCount()) >= 0)
                               .map(userCoin -> {
                                   coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
                                                                                                          coinEntity,
@@ -112,43 +110,63 @@ public class UserCoinServiceImpl implements UserCoinService
                                   updatedTransactionDtoList.add(UserCoinDto.builder()
                                                                            .coinName(userCoinDto.getCoinName())
                                                                            .coinCount(userCoin.getBalance())
-                                                                           .conversionRate(coinEntity.getMonetaryValuePerCoin())
                                                                            .build());
 
                                   return userCoin;
                               })
-                              .orElseThrow(() -> new CoinException("Not enough coins!"));
+                              .orElseThrow(() -> new UserCoinException(UserCoinException.INSUFFICIENT_COINS_MESSAGE));
         });
 
         return updatedTransactionDtoList;
     }
 
-    private void updateUserCoins(UserCoin userCoin, int coinCountInTransaction, CoinTransactionType transactionType)
+    private void updateUserCoins(UserCoin userCoin, BigInteger coinCountInTransaction, CoinTransactionType transactionType)
     {
-        int updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType)
-                                 ? userCoin.getBalance() + coinCountInTransaction
-                                 : userCoin.getBalance() - coinCountInTransaction;
+        BigInteger updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType)
+                                 ? userCoin.getBalance().add(coinCountInTransaction)
+                                 : userCoin.getBalance().subtract(coinCountInTransaction);
         userCoin.setBalance(updatedCoinBalance);
         userCoinRepository.save(userCoin);
     }
 
     @Override
-    public UserCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchasePrice)
+    @Transactional
+    public UserAddAndRedeemCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchasePrice)
     {
         String realmId = realmService.getRealmId(realmName);
         String userId = userService.getUserId(userName, realmId);
 
         List<UserCoin> userCoins = userCoinRepository.findAllByUserId(userId);
 
-        userCoins.forEach(userCoin -> {
+        BigInteger coinsRedeemed = BigInteger.ZERO;
+        BigDecimal discountApplicable = BigDecimal.ZERO;
+        List<UserCoinDto> userCoinDtoList = new ArrayList<>();
+        for(UserCoin userCoin: userCoins)
+        {
             String coinId = userCoin.getCoinId();
-            Optional<Coin> coinEntity = coinRepository.findById(coinId);
-            BigInteger coinEquivalentOfPurcha =
-                    coinEntity.map(coin -> purchasePrice.divide(coin.getMonetaryAmountToEarnOneCoin(), RoundingMode.FLOOR)
-                                                        .toBigInteger())
-                              .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
+            Coin coinEntity = coinRepository.findById(coinId)
+                                            .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
 
+            BigInteger coinEquivalentOfPurchasePrice = purchasePrice.divide(coinEntity.getMonetaryAmountToEarnOneCoin(), RoundingMode.FLOOR)
+                                                                    .toBigInteger();
 
-        });
+            userCoinDtoList.add(userCoinTransformer.toUserCoinDto(coinEntity, userCoin));
+            if (userCoin.getBalance().compareTo(coinEquivalentOfPurchasePrice) >= 0)
+            {
+                coinsRedeemed = coinsRedeemed.add(coinEquivalentOfPurchasePrice);
+                discountApplicable = discountApplicable.add(purchasePrice);
+                userCoin.setBalance(userCoin.getBalance().subtract(coinEquivalentOfPurchasePrice));
+            }
+
+            else
+            {
+                coinsRedeemed = coinsRedeemed.add(userCoin.getBalance());
+                discountApplicable = discountApplicable.add(new BigDecimal(userCoin.getBalance()).multiply(coinEntity.getMonetaryValuePerCoin()));
+                purchasePrice = purchasePrice.subtract(discountApplicable);
+                userCoin.setBalance(BigInteger.ZERO);
+            }
+        }
+
+        return new UserAddAndRedeemCoinDto(userCoinDtoList, discountApplicable);
     }
 }

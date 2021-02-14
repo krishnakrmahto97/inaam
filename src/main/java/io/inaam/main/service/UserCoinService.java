@@ -1,6 +1,7 @@
 package io.inaam.main.service;
 
 import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserAddAndRedeemCoinDto;
 import io.inaam.main.dto.UserCoinDto;
 
 import java.math.BigDecimal;
@@ -18,5 +19,5 @@ public interface UserCoinService
     List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName, String userName,
                                                           List<UserCoinDto> redeemCoinsDetails);
 
-    UserCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchaseAmount);
+    UserAddAndRedeemCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchaseAmount);
 }

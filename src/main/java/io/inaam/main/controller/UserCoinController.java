@@ -1,6 +1,7 @@
 package io.inaam.main.controller;
 
 import io.inaam.main.dto.CoinTransactionDto;
+import io.inaam.main.dto.UserAddAndRedeemCoinDto;
 import io.inaam.main.dto.UserCoinDto;
 import io.inaam.main.service.UserCoinService;
 import io.swagger.annotations.ApiOperation;
@@ -51,9 +52,9 @@ public class UserCoinController
 
     @PostMapping("/addAndRedeemCoins")
     @ApiOperation(value = "Add and redeem user coins based on purchase amount")
-    public UserCoinDto addAndRedeemCoins(@PathVariable String realmName,
-                                         @PathVariable String userName,
-                                         @RequestBody BigDecimal purchaseAmount)
+    public UserAddAndRedeemCoinDto addAndRedeemCoins(@PathVariable String realmName,
+                                                     @PathVariable String userName,
+                                                     @RequestBody BigDecimal purchaseAmount)
     {
         return userCoinService.addAndRedeemCoins(realmName, userName, purchaseAmount);
     }
