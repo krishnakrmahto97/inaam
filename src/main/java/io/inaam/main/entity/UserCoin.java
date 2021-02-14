@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -33,10 +36,14 @@ public class UserCoin
     private String coinId;
 
     @Basic
-    @Column(name = "balance")
+    @Column(name = "balance", nullable = false)
     private BigInteger balance;
 
-    @Embedded
-    @Builder.Default
-    private TimeAttribute timeAttribute = new TimeAttribute();
+    @CreationTimestamp
+    @Column(name = "creation_time")
+    private LocalDateTime creationTime;
+
+    @UpdateTimestamp
+    @Column(name = "last_modified_time")
+    private LocalDateTime lastModifiedTime;
 }

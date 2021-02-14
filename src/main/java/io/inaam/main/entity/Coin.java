@@ -3,10 +3,13 @@ package io.inaam.main.entity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -35,7 +38,11 @@ public class Coin
     @Column(name = "monetary_amount_to_earn_one_coin")
     private BigDecimal monetaryAmountToEarnOneCoin;
 
-    @Embedded
-    @Builder.Default
-    private TimeAttribute timeAttribute = new TimeAttribute();
+    @CreationTimestamp
+    @Column(name = "creation_time")
+    private LocalDateTime creationTime;
+
+    @UpdateTimestamp
+    @Column(name = "last_modified_time")
+    private LocalDateTime lastModifiedTime;
 }

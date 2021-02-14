@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -39,7 +40,16 @@ public class UserCoinServiceImpl implements UserCoinService
     @Override
     public List<UserCoinDto> getUserCoinDtoList(String realmName, String userName)
     {
-        return null;
+        return userCoinRepository.findAllByUserId(userService.getUserId(realmService.getRealmId(realmName),
+                                                                 userName))
+                                 .stream()
+                                 .map(userCoin -> {
+                                     String coinName = coinRepository.findById(userCoin.getCoinId())
+                                                                     .map(Coin::getName)
+                                                                     .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
+                                     return new UserCoinDto(coinName, userCoin.getBalance());
+                                 })
+                                 .collect(Collectors.toList());
     }
 
     @Override
@@ -76,7 +86,7 @@ public class UserCoinServiceImpl implements UserCoinService
             UserCoin userCoin = userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
                                                   .orElseGet(() -> new UserCoin(userId, coinEntity.getId()));
 
-            updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.ADD);
+            userCoin.setBalance(userCoin.getBalance().add(userCoinDto.getCoinCount()));
             updatedTransactionDtoList.add(new UserCoinDto(userCoinDto.getCoinName(), userCoin.getBalance()));
         });
         return updatedTransactionDtoList;
@@ -106,11 +116,9 @@ public class UserCoinServiceImpl implements UserCoinService
                                                                                                          userId,
                                                                                                          CoinTransactionType.REDEEM));
 
-                                  updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.REDEEM);
-                                  updatedTransactionDtoList.add(UserCoinDto.builder()
-                                                                           .coinName(userCoinDto.getCoinName())
-                                                                           .coinCount(userCoin.getBalance())
-                                                                           .build());
+                                  userCoin.setBalance(userCoin.getBalance().subtract(userCoinDto.getCoinCount()));
+                                  updatedTransactionDtoList.add(new UserCoinDto(userCoinDto.getCoinName(),
+                                                                                userCoin.getBalance()));
 
                                   return userCoin;
                               })
@@ -120,15 +128,6 @@ public class UserCoinServiceImpl implements UserCoinService
         return updatedTransactionDtoList;
     }
 
-    private void updateUserCoins(UserCoin userCoin, BigInteger coinCountInTransaction, CoinTransactionType transactionType)
-    {
-        BigInteger updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType)
-                                 ? userCoin.getBalance().add(coinCountInTransaction)
-                                 : userCoin.getBalance().subtract(coinCountInTransaction);
-        userCoin.setBalance(updatedCoinBalance);
-        userCoinRepository.save(userCoin);
-    }
-
     @Override
     @Transactional
     public UserAddAndRedeemCoinDto addAndRedeemCoins(String realmName, String userName, BigDecimal purchasePrice)
@@ -136,7 +135,7 @@ public class UserCoinServiceImpl implements UserCoinService
         String realmId = realmService.getRealmId(realmName);
         String userId = userService.getUserId(userName, realmId);
 
-        List<UserCoin> userCoins = userCoinRepository.findAllByUserId(userId);
+        List<UserCoin> userCoins = userCoinRepository.findAllByUserIdAAndBalanceNotZeroOrderByCreationTime(userId);
 
         BigInteger coinsRedeemed = BigInteger.ZERO;
         BigDecimal discountApplicable = BigDecimal.ZERO;
