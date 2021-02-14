@@ -39,32 +39,4 @@ public class CoinController
     {
         return coinService.updateCoin(realmName, coinName, coin);
     }
-    
-    @GetMapping("/{userName}")
-    @ApiOperation(value = "Get user coins")
-    public List<UserCoinDto> getUserCoins(@PathVariable String realmName, @PathVariable String userName)
-    {
-        return coinService.getUserCoinDtoList(realmName, userName);
-    }
-
-    @GetMapping("/{userName}/transaction")
-    @ApiOperation(value = "Get coin transactions of a user")
-    public List<CoinTransactionDto> getCoinTransactions(@PathVariable String realmName, @PathVariable String userName)
-    {
-        return coinService.getUserCoinTransactionDtoList(realmName, userName);
-    }
-
-    @PutMapping("/{userName}/add")
-    @ApiOperation(value = "Add coins under a user")
-    public List<UserCoinDto> addUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> addCoinsDetails)
-    {
-        return coinService.createTransactionAndAddUserCoins(realmName, userName, addCoinsDetails);
-    }
-
-    @PutMapping ("/{userName}/redeem")
-    @ApiOperation(value = "Redeem user coins")
-    public List<UserCoinDto> redeemUserCoins(@PathVariable String realmName, @PathVariable String userName, @RequestBody List<UserCoinDto> redeemCoinsDetails)
-    {
-        return coinService.createTransactionAndRedeemUserCoins(realmName, userName, redeemCoinsDetails);
-    }
 }

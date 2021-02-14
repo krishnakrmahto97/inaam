@@ -27,9 +27,6 @@ public class CoinServiceImpl implements CoinService
     private final CoinRepository coinRepository;
     private final CoinTransformer coinTransformer;
     private final RealmService realmService;
-    private final UserService userService;
-    private final CoinTransactionRepository coinTransactionRepository;
-    private final UserCoinRepository userCoinRepository;
 
     @Override
     public void createCoin(CoinDto coinDto, String realmName)
@@ -47,118 +44,12 @@ public class CoinServiceImpl implements CoinService
 
     @Override
     @Transactional
-    public List<UserCoinDto> createTransactionAndAddUserCoins(String realmName,
-                                                              String userName,
-                                                              List<UserCoinDto> userCoinDtoList)
-    {
-        String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserId(userName, realmId);
-
-        List<UserCoinDto> updatedTransactionDtoList = new ArrayList<>();
-
-        userCoinDtoList.forEach(userCoinDto -> {
-            Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
-
-            coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
-                                                                                   coinEntity,
-                                                                                   realmId,
-                                                                                   userId,
-                                                                                   CoinTransactionType.ADD));
-
-            UserCoin userCoin = userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
-                                                  .orElseGet(() -> new UserCoin(userId, coinEntity.getId(), 0));
-
-            updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.ADD);
-            updatedTransactionDtoList.add(UserCoinDto.builder()
-                                                     .coinName(userCoinDto.getCoinName())
-                                                     .coinCount(userCoin.getBalance())
-                                                     .conversionRate(coinEntity.getConversionRate())
-                                                     .build());
-        });
-        return updatedTransactionDtoList;
-    }
-
-    @Override
-    @Transactional
-    public List<UserCoinDto> createTransactionAndRedeemUserCoins(String realmName,
-                                                                 String userName,
-                                                                 List<UserCoinDto> userCoinDtoList)
-    {
-        String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserId(userName, realmId);
-
-        List<UserCoinDto> updatedTransactionDtoList = new ArrayList<>();
-
-        userCoinDtoList.forEach(userCoinDto -> {
-            Coin coinEntity = coinRepository.findByRealmIdAndName(realmId, userCoinDto.getCoinName())
-                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
-
-            userCoinRepository.findById(new UserCoinPK(userId, coinEntity.getId()))
-                              .filter(userCoin -> userCoin.getBalance() >= userCoinDto.getCoinCount())
-                              .map(userCoin -> {
-                                  coinTransactionRepository.save(coinTransformer.toCoinTransactionEntity(userCoinDto,
-                                                                                                         coinEntity,
-                                                                                                         realmId,
-                                                                                                         userId,
-                                                                                                         CoinTransactionType.REDEEM));
-
-                                  updateUserCoins(userCoin, userCoinDto.getCoinCount(), CoinTransactionType.REDEEM);
-                                  updatedTransactionDtoList.add(UserCoinDto.builder()
-                                                                           .coinName(userCoinDto.getCoinName())
-                                                                           .coinCount(userCoin.getBalance())
-                                                                           .conversionRate(coinEntity.getConversionRate())
-                                                                           .build());
-
-                                  return userCoin;
-                              })
-                              .orElseThrow(() -> new CoinException("Not enough coins!"));
-        });
-
-        return updatedTransactionDtoList;
-    }
-
-    @Override
-    public List<UserCoinDto> getUserCoinDtoList(String realmName, String userName)
-    {
-        String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserId(userName, realmId);
-
-        return userCoinRepository.findAllByUserId(userId)
-                                 .stream()
-                                 .map(userCoinEntity -> coinRepository.findById(userCoinEntity.getCoinId())
-                                                                      .map(coinEntity -> coinTransformer.toUserCoinDto(coinEntity, userCoinEntity))
-                                                                      .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND)))
-                                 .collect(Collectors.toList());
-    }
-
-    private void updateUserCoins(UserCoin userCoin, int coinCountInTransaction, CoinTransactionType transactionType)
-    {
-        int updatedCoinBalance = CoinTransactionType.ADD.equals(transactionType)
-                ? userCoin.getBalance() + coinCountInTransaction
-                : userCoin.getBalance() - coinCountInTransaction;
-        userCoin.setBalance(updatedCoinBalance);
-        userCoinRepository.save(userCoin);
-    }
-
-    @Override
-    public List<CoinTransactionDto> getUserCoinTransactionDtoList(String realmName, String userName)
-    {
-        String realmId = realmService.getRealmId(realmName);
-        String userId = userService.getUserId(userName, realmId);
-
-        return coinTransformer.toCoinTransactionDtoList(coinTransactionRepository.findAllByRealmIdAndUserId(realmId,
-                                                                                                            userId));
-    }
-
-    @Override
-    @Transactional
     public CoinDto updateCoin(String realmName, String coinName, CoinDto coinDto)
     {
         Coin coinEntity = coinRepository.findByRealmIdAndName(realmService.getRealmId(realmName), coinName)
                                         .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND));
         coinEntity.setName(coinDto.getName());
-        coinEntity.setConversionRate(coinDto.getConversionRate());
+        coinEntity.setMonetaryValuePerCoin(coinDto.getConversionRate());
         return coinTransformer.toCoinDto(coinRepository.save(coinEntity));
     }
 }
