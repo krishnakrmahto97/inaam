@@ -46,7 +46,7 @@ public class UserCoinServiceImpl implements UserCoinService
                                  .map(userCoin -> {
                                      String coinName = coinRepository.findById(userCoin.getCoinId())
                                                                      .map(Coin::getName)
-                                                                     .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
+                                                                     .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
                                      return new UserCoinDto(coinName, userCoin.getBalance());
                                  })
                                  .collect(Collectors.toList());
@@ -144,7 +144,7 @@ public class UserCoinServiceImpl implements UserCoinService
         {
             String coinId = userCoin.getCoinId();
             Coin coinEntity = coinRepository.findById(coinId)
-                                            .orElseThrow(() -> new UserCoinException(UserCoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
+                                            .orElseThrow(() -> new CoinException(CoinException.COIN_TYPE_NOT_FOUND_MESSAGE));
 
             BigInteger coinEquivalentOfPurchasePrice = purchasePrice.divide(coinEntity.getMonetaryAmountToEarnOneCoin(), RoundingMode.FLOOR)
                                                                     .toBigInteger();
